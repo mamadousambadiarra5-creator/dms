@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mini Commande Samina</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <div class="loader-container">
+
+        <img src="assets/logo.png"
+             alt="Logo Samina"
+             class="logo">
+
+        <h1>
+            MINI COMMANDE SAMINA
+        </h1>
+
+        <p>
+            Gestion simple de vos commandes
+        </p>
+
+
+
+        <div class="loader"></div>
+
+    </div>
+
+
+
+<script>
+
+    // Vérification session utilisateur
+
+    const user = localStorage.getItem("currentUser");
+
+
+
+    setTimeout(()=>{
+
+        if(user){
+
+            // utilisateur connecté
+            window.location.href = "dashboard.html";
+
+        }else{
+
+            // première connexion
+            window.location.href = "auth/login.html";
+
+        }
+
+    },1500);
+
+
+
+</script>
+
+
+
+</body>
+</html>

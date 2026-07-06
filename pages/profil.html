@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Profil - Samina</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .profile-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--card-color);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+        .profile-form-group {
+            margin-bottom: 20px;
+        }
+        .profile-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .profile-form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .profile-form-group input[readonly] {
+            background: #eef2f7;
+            cursor: not-allowed;
+        }
+        body.sombre .profile-form-group input {
+            background: #1e1e2f;
+            color: white;
+            border-color: #444;
+        }
+        body.sombre .profile-form-group input[readonly] {
+            background: #333;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+        <div class="sidebar-menu-wrapper">
+            <div class="logo-box">
+                <img src="../assets/logo.png" width="45" alt="Logo">
+                <div>
+                    <h1>MINI COMMANDE</h1>
+                    <p>SAMINA</p>
+                </div>
+            </div>
+
+            <ul>
+                <li>
+                    <a href="../dashboard.html">🏠 Dashboard</a>
+                </li>
+                <li>
+                    <a href="produits.html">📦 Produits</a>
+                </li>
+                <li>
+                    <a href="membres.html">👥 Membres</a>
+                </li>
+                <li>
+                    <a href="commandes.html">🛒 Commandes</a>
+                </li>
+                <li>
+                    <a href="nouvelle-commande.html">➕ Nouvelle commande</a>
+                </li>
+                <li>
+                    <a href="facture.html">🧾 Factures</a>
+                </li>
+                <li>
+                    <a href="profil.html">👤 Profil</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-profile" style="cursor: pointer;" onclick="window.location.href='profil.html'">
+            <div class="profile-avatar">-</div>
+            <div class="profile-info">
+                <span class="profile-name" id="sidebarUserName">Admin</span>
+                <span class="profile-role">Administrateur</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ================= CONTENT ================= -->
+    <main class="main-content">
+        <div class="top-bar">
+            <h2>Mon Profil</h2>
+        </div>
+
+        <div class="profile-container">
+            <form id="profileForm">
+                <div class="profile-form-group">
+                    <label for="profileName">Nom complet</label>
+                    <input type="text" id="profileName" required>
+                </div>
+                <div class="profile-form-group">
+                    <label for="profileEmail">Adresse Email (Identifiant)</label>
+                    <input type="email" id="profileEmail" readonly>
+                </div>
+                <div class="profile-form-group">
+                    <label for="profilePhone">Numéro de téléphone</label>
+                    <input type="text" id="profilePhone" required>
+                </div>
+
+                <div style="margin-top: 30px; display: flex; gap: 15px;">
+                    <button type="submit" style="flex: 2; padding: 14px;">💾 Sauvegarder les modifications</button>
+                    <button type="button" class="close-btn" onclick="logout()" style="flex: 1; padding: 14px;">🚪 Déconnexion</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Thème flottant -->
+    <select id="mode1">
+        <option value="clair">☀️ Clair</option>
+        <option value="sombre">🌙 Sombre</option>
+    </select>
+
+    <script src="../js/session.js"></script>
+    <script src="../theme.js"></script>
+    <script src="../js/profil.js"></script>
+</body>
+
+</html>

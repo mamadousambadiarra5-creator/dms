@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Samina</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+        <div class="sidebar-menu-wrapper">
+            <div class="logo-box">
+                <img src="assets/logo.png" width="45" alt="Logo">
+                <div>
+                    <h1>MINI COMMANDE</h1>
+                    <p>SAMINA</p>
+                </div>
+            </div>
+
+            <ul>
+                <li>
+                    <a href="dashboard.html">🏠 Dashboard</a>
+                </li>
+                <li>
+                    <a href="pages/produits.html">📦 Produits</a>
+                </li>
+                <li>
+                    <a href="pages/membres.html">👥 Membres</a>
+                </li>
+                <li>
+                    <a href="pages/commandes.html">🛒 Commandes</a>
+                </li>
+                <li>
+                    <a href="pages/nouvelle-commande.html">➕ Nouvelle commande</a>
+                </li>
+            
+                <li>
+                    <a href="pages/profil.html">👤 Profil</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-profile" style="cursor: pointer;" onclick="window.location.href='pages/profil.html'">
+            <div class="profile-avatar">-</div>
+            <div class="profile-info">
+                <span class="profile-name" id="sidebarUserName">Admin</span>
+                <span class="profile-role">Administrateur</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ================= CONTENT ================= -->
+    <main class="main-content">
+        <div class="top-bar">
+            <h2>Tableau de bord</h2>
+            <div>
+                Bonjour, <b id="username">Utilisateur</b>
+            </div>
+        </div>
+
+        <!-- ================= CARDS ================= -->
+        <div class="cards">
+            <div class="card">
+                <h3>Produits</h3>
+                <p id="totalProduits">0</p>
+            </div>
+            <div class="card">
+                <h3>Membres</h3>
+                <p id="totalMembres">0</p>
+            </div>
+            <div class="card">
+                <h3>Commandes</h3>
+                <p id="totalCommandes">0</p>
+            </div>
+            <div class="card">
+                <h3>Chiffre d'affaires</h3>
+                <p id="totalMoney">0 FCFA</p>
+            </div>
+        </div>
+
+        <!-- ================= TABLE ================= -->
+        <section class="table-section">
+            <h2>Dernières commandes</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Client</th>
+                        <th>Produit(s)</th>
+                        <th>Montant</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="commandeTable">
+                    <!-- Généré dynamiquement -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <!-- Thème flottant -->
+    <select id="mode1">
+        <option value="clair">☀️ Clair</option>
+        <option value="sombre">🌙 Sombre</option>
+    </select>
+
+    <script src="js/session.js"></script>
+    <script src="theme.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+
+</html>

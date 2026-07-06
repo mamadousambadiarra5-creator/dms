@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nouvelle Commande - Samina</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .form-container {
+            background: var(--card-color);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .product-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 15px;
+            background: #fff;
+        }
+        .product-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .product-item:last-child {
+            border-bottom: none;
+        }
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .product-qty {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .product-qty input {
+            width: 60px;
+            padding: 5px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        .price-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .price-summary input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .price-summary input[readonly] {
+            background: #eef2f7;
+            font-weight: bold;
+        }
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            min-height: 80px;
+            resize: vertical;
+        }
+        /* Mode sombre styles additionnels */
+        body.sombre .product-list,
+        body.sombre textarea,
+        body.sombre .price-summary input {
+            background: #1e1e2f;
+            color: white;
+            border-color: #444;
+        }
+        body.sombre .price-summary input[readonly] {
+            background: #333;
+        }
+        body.sombre .product-item {
+            border-color: #333;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+        <div class="sidebar-menu-wrapper">
+            <div class="logo-box">
+                <img src="../assets/logo.png" width="45" alt="Logo">
+                <div>
+                    <h1>MINI COMMANDE</h1>
+                    <p>SAMINA</p>
+                </div>
+            </div>
+
+            <ul>
+                <li>
+                    <a href="../dashboard.html">🏠 Dashboard</a>
+                </li>
+                <li>
+                    <a href="produits.html">📦 Produits</a>
+                </li>
+                <li>
+                    <a href="membres.html">👥 Membres</a>
+                </li>
+                <li>
+                    <a href="commandes.html">🛒 Commandes</a>
+                </li>
+                <li>
+                    <a href="nouvelle-commande.html">➕ Nouvelle commande</a>
+                </li>
+                <li>
+                    <a href="facture.html">🧾 Factures</a>
+                </li>
+                <li>
+                    <a href="profil.html">👤 Profil</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-profile" style="cursor: pointer;" onclick="window.location.href='profil.html'">
+            <div class="profile-avatar">-</div>
+            <div class="profile-info">
+                <span class="profile-name" id="sidebarUserName">Admin</span>
+                <span class="profile-role">Administrateur</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ================= CONTENT ================= -->
+    <main class="main-content">
+        <div class="top-bar">
+            <h2>Enregistrer une nouvelle commande</h2>
+        </div>
+
+        <div class="form-container">
+            <form id="commandeForm">
+                <!-- Membre -->
+                <div class="form-group">
+                    <label for="nomCommande">Sélectionner le membre *</label>
+                    <select id="nomCommande" required>
+                        <option value="">-- Choisir un membre --</option>
+                    </select>
+                </div>
+
+                <!-- Produits -->
+                <div class="form-group">
+                    <label>Sélectionner les produits *</label>
+                    <div class="product-list" id="productListContainer">
+                        <!-- Généré dynamiquement -->
+                    </div>
+                </div>
+
+                <!-- Message / Note -->
+                <div class="form-group">
+                    <label for="message">Note ou message particulier</label>
+                    <textarea id="message" placeholder="Ex: Sans piment, livraison à 14h..."></textarea>
+                </div>
+
+                <!-- Prix -->
+                <div class="price-summary">
+                    <div>
+                        <label for="prixInitial">Montant Total (FCFA)</label>
+                        <input type="number" id="prixInitial" readonly value="0">
+                    </div>
+                    <div>
+                        <label for="prixTotal">Montant Payé (FCFA) *</label>
+                        <input type="number" id="prixTotal" required min="0" value="0">
+                    </div>
+                    <div>
+                        <label for="reste">Reste à Payer (FCFA)</label>
+                        <input type="number" id="reste" readonly value="0">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 30px;">
+                    <button type="submit" style="width: 100%; padding: 15px; font-size: 16px;">💾 Valider la commande</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Thème flottant -->
+    <select id="mode1">
+        <option value="clair">☀️ Clair</option>
+        <option value="sombre">🌙 Sombre</option>
+    </select>
+
+    <script src="../js/session.js"></script>
+    <script src="../theme.js"></script>
+    <script src="../js/nouvelle-commande.js"></script>
+</body>
+
+</html>

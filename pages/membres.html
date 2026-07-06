@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Membres - Samina</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+        <div class="sidebar-menu-wrapper">
+            <div class="logo-box">
+                <img src="../assets/logo.png" width="45" alt="Logo">
+                <div>
+                    <h1>MINI COMMANDE</h1>
+                    <p>SAMINA</p>
+                </div>
+            </div>
+
+            <ul>
+                <li>
+                    <a href="../dashboard.html">🏠 Dashboard</a>
+                </li>
+                <li>
+                    <a href="produits.html">📦 Produits</a>
+                </li>
+                <li>
+                    <a href="membres.html">👥 Membres</a>
+                </li>
+                <li>
+                    <a href="commandes.html">🛒 Commandes</a>
+                </li>
+                <li>
+                    <a href="nouvelle-commande.html">➕ Nouvelle commande</a>
+                </li>
+                <li>
+                    <a href="facture.html">🧾 Factures</a>
+                </li>
+                <li>
+                    <a href="profil.html">👤 Profil</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-profile" style="cursor: pointer;" onclick="window.location.href='profil.html'">
+            <div class="profile-avatar">-</div>
+            <div class="profile-info">
+                <span class="profile-name" id="sidebarUserName">Admin</span>
+                <span class="profile-role">Administrateur</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ================= CONTENT ================= -->
+    <main class="main-content">
+        <div class="top-bar">
+            <h2>Gestion des Membres</h2>
+            <button onclick="openPopup('popupMembre')">👥 Ajouter un membre</button>
+        </div>
+
+        <section class="table-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Rechercher un membre (Nom ou Prénom)...">
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="membreTable">
+                    <!-- Généré dynamiquement -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <!-- ================= POPUP MEMBRE ================= -->
+    <div id="popupMembre" class="popup">
+        <div class="popup-content">
+            <h2 id="popupTitle">Ajouter un membre</h2>
+            <form id="membreForm">
+                <input type="hidden" id="editIndex" value="-1">
+                <label for="nom">Nom</label>
+                <input type="text" id="nom" placeholder="Ex: Dupont" required>
+                
+                <label for="prenom">Prénom</label>
+                <input type="text" id="prenom" placeholder="Ex: Jean" required>
+                
+                <div class="popup-buttons">
+                    <button type="submit" class="submit-btn">Enregistrer</button>
+                    <button type="button" class="close-btn" onclick="closePopup('popupMembre')">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Thème flottant -->
+    <select id="mode1">
+        <option value="clair">☀️ Clair</option>
+        <option value="sombre">🌙 Sombre</option>
+    </select>
+
+    <script src="../js/session.js"></script>
+    <script src="../theme.js"></script>
+    <script src="../js/membre.js"></script>
+</body>
+
+</html>
