@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum ProduitCategorie {
+  PLATS
+  BOISSON
+}
+
+enum UtilisateurRole {
+  ADMIN
+  CAISSIER
+}
+
+model Utilisateur {
+  id_usr         Int       @id @default(autoincrement()) @map("id_usr")
+  nom_usr        String    @map("nom_usr")
+  prenom_usr     String    @map("prenom_usr")
+  telephone_usr  String?   @map("telephone_usr")
+  email_usr      String?   @unique @map("email_usr")
+  motDePasse_usr String    @map("motDePasse_usr")
+  role_usr       UtilisateurRole @default(CAISSIER) @map("role_usr")
+  actif          Boolean?  @default(true) @map("actif")
+
+  produits  Produit[]
+  commandes Commande[]
+
+  @@map("utilisateur")
+}
+
+model Produit {
+  id_prd        Int               @id @default(autoincrement()) @map("id_prd")
+  nom_prd       String            @map("nom_prd")
+  prix_prd      Decimal           @db.Decimal(10,2) @map("prix_prd")
+  categorie_prd ProduitCategorie  @map("categorie_prd")
+  id_usr        Int               @map("id_usr")
+
+  utilisateur  Utilisateur        @relation(fields: [id_usr], references: [id_usr])
+  details      DetailCommande[]
+
+  @@map("produit")
+}
+
+model Commande {
+  id_cmd        Int               @id @default(autoincrement()) @map("id_cmd")
+  date_cmd      DateTime          @default(now()) @db.Timestamp @map("date_cmd")
+  prix_total    Decimal           @db.Decimal(10,2) @map("prix_total")
+  montant_payer Decimal           @db.Decimal(10,2) @map("montant_payer")
+  reste         Decimal           @db.Decimal(10,2) @map("reste")
+  id_mbr        Int               @map("id_mbr")
+  id_usr        Int               @map("id_usr")
+
+  utilisateur   Utilisateur       @relation(fields: [id_usr], references: [id_usr])
+  details       DetailCommande[]
+
+  @@map("commande")
+}
+
+model DetailCommande {
+  id_detail     Int     @id @default(autoincrement()) @map("id_detail")
+  id_cmd        Int     @map("id_cmd")
+  id_prd        Int     @map("id_prd")
+  quantite      Int     @default(1)
+  prix_unitaire Decimal @db.Decimal(10,2) @map("prix_unitaire")
+  sous_total    Decimal @db.Decimal(10,2) @map("sous_total")
+
+  commande      Commande @relation(fields: [id_cmd], references: [id_cmd])
+  produit       Produit  @relation(fields: [id_prd], references: [id_prd])
+
+  @@map("detail_commande")
+}
