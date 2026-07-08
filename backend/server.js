@@ -205,10 +205,10 @@ app.get("/api/produits", async (req, res) => {
 
 app.post("/api/produits", async (req, res) => {
   try {
-    const { nom, prix } = req.body;
+    const { nom, prix, categorie } = req.body;
 
-    // Déterminer la catégorie
-    const lowerNom = nom.toLowerCase();
+    const categorieValide = categorie === "PLATS" || categorie === "BOISSON";
+    const lowerNom = (nom || "").toLowerCase();
     const isBoisson =
       lowerNom.includes("coca") ||
       lowerNom.includes("fanta") ||
@@ -218,7 +218,7 @@ app.post("/api/produits", async (req, res) => {
       lowerNom.includes("drink") ||
       lowerNom.includes("biere") ||
       lowerNom.includes("boisson");
-    const categorie = isBoisson ? "BOISSON" : "PLATS";
+    const categorieFinal = categorieValide ? categorie : isBoisson ? "BOISSON" : "PLATS";
 
     // Trouver un utilisateur par défaut pour la relation requise
     const defaultUser = await prisma.utilisateur.findFirst();
@@ -230,7 +230,7 @@ app.post("/api/produits", async (req, res) => {
       data: {
         nom_prd: nom,
         prix_prd: Number(prix),
-        categorie_prd: categorie,
+        categorie_prd: categorieFinal,
         id_usr: defaultUser.id_usr,
       },
     });
@@ -249,13 +249,15 @@ app.post("/api/produits", async (req, res) => {
 app.put("/api/produits/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { nom, prix } = req.body;
+    const { nom, prix, categorie } = req.body;
+    const categorieValide = categorie === "PLATS" || categorie === "BOISSON";
 
     const updated = await prisma.produit.update({
       where: { id_prd: Number(id) },
       data: {
         nom_prd: nom,
         prix_prd: Number(prix),
+        ...(categorieValide ? { categorie_prd: categorie } : {}),
       },
     });
 

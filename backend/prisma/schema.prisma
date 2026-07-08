@@ -1,84 +1,70 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+generator client {
+  provider = "prisma-client-js"
+}
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
-}
-
-enum ProduitCategorie {
-  PLATS
-  BOISSON
-}
-
-enum UtilisateurRole {
-  ADMIN
-  CAISSIER
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model Utilisateur {
-  id_usr         Int       @id @default(autoincrement()) @map("id_usr")
-  nom_usr        String    @map("nom_usr")
-  prenom_usr     String    @map("prenom_usr")
-  telephone_usr  String?   @map("telephone_usr")
-  email_usr      String?   @unique @map("email_usr")
-  motDePasse_usr String    @map("motDePasse_usr")
-  role_usr       UtilisateurRole @default(CAISSIER) @map("role_usr")
-  actif          Boolean?  @default(true) @map("actif")
+  id_usr         Int             @id @default(autoincrement()) @map("id_usr")
+  nom_usr        String          @map("nom_usr")
+  prenom_usr     String          @map("prenom_usr")
+  telephone_usr  String?         @map("telephone_usr")
+  email_usr      String?         @unique @map("email_usr")
+  motDePasse_usr String          @map("motDePasse_usr")
+  role_usr       UtilisateurRole @default(CAISSIER) @map("role_usr")
+  actif          Boolean?        @default(true) @map("actif")
+  commandes      Commande[]
+  produits       Produit[]
 
-  produits  Produit[]
-  commandes Commande[]
-
-  @@map("utilisateur")
+  @@map("utilisateur")
 }
 
 model Produit {
-  id_prd        Int               @id @default(autoincrement()) @map("id_prd")
-  nom_prd       String            @map("nom_prd")
-  prix_prd      Decimal           @db.Decimal(10,2) @map("prix_prd")
-  categorie_prd ProduitCategorie  @map("categorie_prd")
-  id_usr        Int               @map("id_usr")
+  id_prd        Int              @id @default(autoincrement()) @map("id_prd")
+  nom_prd       String           @map("nom_prd")
+  prix_prd      Decimal          @map("prix_prd") @db.Decimal(10, 2)
+  categorie_prd ProduitCategorie @map("categorie_prd")
+  id_usr        Int              @map("id_usr")
+  details       DetailCommande[]
+  utilisateur   Utilisateur      @relation(fields: [id_usr], references: [id_usr])
 
-  utilisateur  Utilisateur        @relation(fields: [id_usr], references: [id_usr])
-  details      DetailCommande[]
-
-  @@map("produit")
+  @@index([id_usr], map: "produit_id_usr_fkey")
+  @@map("produit")
 }
 
 model Commande {
   id_cmd        Int              @id @default(autoincrement()) @map("id_cmd")
-  date_cmd      DateTime         @db.DateTime @map("date_cmd")
-  prix_total    Decimal          @db.Decimal(10,2) @map("prix_total")
-  montant_payer Decimal          @db.Decimal(10,2) @map("montant_payer")
-  reste         Decimal          @db.Decimal(10,2) @map("reste")
+  date_cmd      DateTime         @map("date_cmd") @db.DateTime(0)
+  prix_total    Decimal          @map("prix_total") @db.Decimal(10, 2)
+  montant_payer Decimal          @map("montant_payer") @db.Decimal(10, 2)
+  reste         Decimal          @map("reste") @db.Decimal(10, 2)
   message       String?          @map("message")
   id_mbr        Int              @map("id_mbr")
   id_usr        Int              @map("id_usr")
-
-  utilisateur   Utilisateur      @relation(fields: [id_usr], references: [id_usr])
   membre        Membre           @relation(fields: [id_mbr], references: [id_mbr])
+  utilisateur   Utilisateur      @relation(fields: [id_usr], references: [id_usr])
   details       DetailCommande[]
 
+  @@index([id_mbr], map: "commande_id_mbr_fkey")
+  @@index([id_usr], map: "commande_id_usr_fkey")
   @@map("commande")
 }
 
 model DetailCommande {
-  id_detail     Int     @id @default(autoincrement()) @map("id_detail")
-  id_cmd        Int     @map("id_cmd")
-  id_prd        Int     @map("id_prd")
-  quantite      Int     @default(1)
-  prix_unitaire Decimal @db.Decimal(10,2) @map("prix_unitaire")
-  sous_total    Decimal @db.Decimal(10,2) @map("sous_total")
-
+  id_detail     Int      @id @default(autoincrement()) @map("id_detail")
+  id_cmd        Int      @map("id_cmd")
+  id_prd        Int      @map("id_prd")
+  quantite      Int      @default(1)
+  prix_unitaire Decimal  @map("prix_unitaire") @db.Decimal(10, 2)
+  sous_total    Decimal  @map("sous_total") @db.Decimal(10, 2)
   commande      Commande @relation(fields: [id_cmd], references: [id_cmd])
   produit       Produit  @relation(fields: [id_prd], references: [id_prd])
 
+  @@index([id_cmd], map: "detail_commande_id_cmd_fkey")
+  @@index([id_prd], map: "detail_commande_id_prd_fkey")
   @@map("detail_commande")
 }
 
@@ -89,4 +75,14 @@ model Membre {
   commandes  Commande[]
 
   @@map("membre")
+}
+
+enum ProduitCategorie {
+  PLATS
+  BOISSON
+}
+
+enum UtilisateurRole {
+  ADMIN
+  CAISSIER
 }

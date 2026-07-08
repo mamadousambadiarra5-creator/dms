@@ -71,6 +71,7 @@
                     <tr>
                         <th>Nom du produit</th>
                         <th>Prix (FCFA)</th>
+                        <th>Catégorie</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -92,6 +93,13 @@
                 
                 <label for="prix">Prix (FCFA)</label>
                 <input type="number" id="prix" placeholder="Ex: 500" required min="0">
+
+                <label for="categorie">Catégorie</label>
+                <select id="categorie" required>
+                    <option value="">Sélectionner une catégorie</option>
+                    <option value="PLATS">Plats</option>
+                    <option value="BOISSON">Boissons</option>
+                </select>
                 
                 <div class="popup-buttons">
                     <button type="submit" class="submit-btn">Enregistrer</button>

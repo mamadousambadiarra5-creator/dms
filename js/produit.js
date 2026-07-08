@@ -41,11 +41,13 @@ function openPopup(id, editId = -1) {
         document.getElementById("editIndex").value = editId;
         document.getElementById("nom").value = prod ? prod.nom : "";
         document.getElementById("prix").value = prod ? prod.prix : "";
+        document.getElementById("categorie").value = prod && prod.categorie ? prod.categorie : "";
     } else {
         document.getElementById("popupTitle").textContent = "Ajouter un produit";
         document.getElementById("editIndex").value = "-1";
         document.getElementById("nom").value = "";
         document.getElementById("prix").value = "";
+        document.getElementById("categorie").value = "";
     }
 }
 
@@ -67,6 +69,7 @@ function afficherProduits(filter = "") {
         tr.innerHTML = `
             <td>${produit.nom}</td>
             <td>${produit.prix} FCFA</td>
+            <td>${produit.categorie || "-"}</td>
             <td>
                 <button onclick="openPopup('popupProduit', ${produit.id})">Modifier</button>
                 <button class="close-btn" onclick="supprimerProduit(${produit.id})">Supprimer</button>
@@ -79,9 +82,10 @@ function afficherProduits(filter = "") {
 async function sauvegarderProduit() {
     const nom = document.getElementById("nom").value.trim();
     const prix = parseFloat(document.getElementById("prix").value);
+    const categorie = document.getElementById("categorie").value.trim();
     const editId = parseInt(document.getElementById("editIndex").value);
 
-    if (!nom || isNaN(prix)) {
+    if (!nom || isNaN(prix) || !categorie) {
         alert("Veuillez remplir tous les champs correctement.");
         return;
     }
@@ -92,13 +96,13 @@ async function sauvegarderProduit() {
             response = await fetch(`${API_URL}/produits`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ nom, prix })
+                body: JSON.stringify({ nom, prix, categorie })
             });
         } else {
             response = await fetch(`${API_URL}/produits/${editId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ nom, prix })
+                body: JSON.stringify({ nom, prix, categorie })
             });
         }
 
