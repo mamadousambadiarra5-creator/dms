@@ -1,3 +1,5 @@
+const API_URL = "http://localhost:3001/api";
+
 document.addEventListener("DOMContentLoaded", () => {
     chargerProfil();
 
@@ -19,7 +21,7 @@ function chargerProfil() {
     document.getElementById("profilePhone").value = user.phone || "";
 }
 
-function sauvegarderProfil() {
+async function sauvegarderProfil() {
     const name = document.getElementById("profileName").value.trim();
     const phone = document.getElementById("profilePhone").value.trim();
     const email = document.getElementById("profileEmail").value;
@@ -29,21 +31,22 @@ function sauvegarderProfil() {
         return;
     }
 
-    // Mettre à jour currentUser
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-    currentUser.name = name;
-    currentUser.phone = phone;
-    localStorage.setItem("currentUser", JSON.stringify(currentUser));
+    try {
+        const response = await fetch(`${API_URL}/auth/profile`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, name, phone })
+        });
 
-    // Mettre à jour dans la liste globale des utilisateurs (users)
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-    const userIndex = users.findIndex(u => u.email === email);
-    if (userIndex > -1) {
-        users[userIndex].name = name;
-        users[userIndex].phone = phone;
-        localStorage.setItem("users", JSON.stringify(users));
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Erreur lors de la mise à jour du profil.");
+
+        // Mettre à jour currentUser dans le stockage local pour refléter les changements sur la page
+        localStorage.setItem("currentUser", JSON.stringify(data));
+
+        alert("Profil mis à jour avec succès !");
+        window.location.reload();
+    } catch (error) {
+        alert(error.message);
     }
-
-    alert("Profil mis à jour avec succès !");
-    window.location.reload();
 }

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facture - Samina</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .invoice-card {
+            background: var(--card-color, #ffffff);
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid #eef2f7;
+        }
+
+        body.sombre .invoice-card {
+            background: #1e1e2f;
+            border-color: #33334d;
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f4f7fc;
+            padding-bottom: 25px;
+            margin-bottom: 30px;
+        }
+
+        body.sombre .invoice-header {
+            border-color: #33334d;
+        }
+
+        .invoice-title h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0077b6;
+        }
+
+        .invoice-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+
+        .invoice-details h3 {
+            font-size: 14px;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .invoice-details p {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        body.sombre .invoice-details p {
+            color: #e2e8f0;
+        }
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .invoice-table th {
+            text-align: left;
+            padding: 12px;
+            background: #f8fafc;
+            font-weight: 600;
+            color: #4a5568;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        body.sombre .invoice-table th {
+            background: #2d2d44;
+            color: #cbd5e0;
+            border-color: #444466;
+        }
+
+        .invoice-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #4a5568;
+        }
+
+        body.sombre .invoice-table td {
+            color: #cbd5e0;
+            border-color: #33334d;
+        }
+
+        .invoice-summary {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .summary-box {
+            width: 300px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f4f7fc;
+            font-size: 15px;
+        }
+
+        body.sombre .summary-row {
+            border-color: #33334d;
+        }
+
+        .summary-row.total {
+            border-bottom: none;
+            font-size: 18px;
+            font-weight: 700;
+            color: #0077b6;
+            padding-top: 15px;
+        }
+
+        .invoice-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 40px;
+        }
+
+        .invoice-actions button {
+            padding: 12px 25px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        @media print {
+            aside.sidebar, .top-bar, .invoice-actions, #mode1 {
+                display: none !important;
+            }
+            .main-content {
+                margin-left: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+            }
+            .invoice-card {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                max-width: 100% !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+        <div class="sidebar-menu-wrapper">
+            <div class="logo-box">
+                <img src="../assets/logo.png" width="45" alt="Logo">
+                <div>
+                    <h1>MINI COMMANDE</h1>
+                    <p>SAMINA</p>
+                </div>
+            </div>
+
+            <ul>
+                <li>
+                    <a href="../dashboard.html">🏠 Dashboard</a>
+                </li>
+                <li>
+                    <a href="produits.html">📦 Produits</a>
+                </li>
+                <li>
+                    <a href="membres.html">👥 Membres</a>
+                </li>
+                <li>
+                    <a href="commandes.html">🛒 Commandes</a>
+                </li>
+                <li>
+                    <a href="nouvelle-commande.html">➕ Nouvelle commande</a>
+                </li>
+                <li>
+                    <a href="facture.html" class="active">🧾 Factures</a>
+                </li>
+                <li>
+                    <a href="profil.html">👤 Profil</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="sidebar-profile" style="cursor: pointer;" onclick="window.location.href='profil.html'">
+            <div class="profile-avatar">-</div>
+            <div class="profile-info">
+                <span class="profile-name" id="sidebarUserName">Admin</span>
+                <span class="profile-role">Administrateur</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ================= CONTENT ================= -->
+    <main class="main-content">
+        <div class="top-bar">
+            <h2>Facture de Commande</h2>
+            <button onclick="window.location.href='commandes.html'">⬅ Retour aux commandes</button>
+        </div>
+
+        <div id="invoiceContainer">
+            <!-- Facture chargée dynamiquement -->
+            <div class="invoice-card" style="text-align: center; padding: 50px;">
+                <p>Sélectionnez une commande dans la page <a href="commandes.html">Commandes</a> pour afficher sa facture.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Thème flottant -->
+    <select id="mode1">
+        <option value="clair">☀️ Clair</option>
+        <option value="sombre">🌙 Sombre</option>
+    </select>
+
+    <script src="../js/session.js"></script>
+    <script src="../theme.js"></script>
+
+    <script>
+        const API_URL = "http://localhost:3001/api";
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get("id");
+
+            if (!orderId) return;
+
+            try {
+                const response = await fetch(`${API_URL}/commandes`);
+                if (!response.ok) throw new Error("Impossible de charger les commandes.");
+                
+                const commandes = await response.json();
+                const cmd = commandes.find(c => c.id === orderId);
+
+                if (!cmd) {
+                    document.getElementById("invoiceContainer").innerHTML = `
+                        <div class="invoice-card" style="text-align: center; padding: 50px; color: red;">
+                            <h3>Facture introuvable</h3>
+                            <p>La commande demandée n'existe pas.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                renderInvoice(cmd);
+            } catch (error) {
+                console.error(error);
+                document.getElementById("invoiceContainer").innerHTML = `
+                    <div class="invoice-card" style="text-align: center; padding: 50px; color: red;">
+                        <h3>Erreur de connexion</h3>
+                        <p>Impossible de joindre le serveur de base de données.</p>
+                    </div>
+                `;
+            }
+        });
+
+        function renderInvoice(cmd) {
+            const container = document.getElementById("invoiceContainer");
+            
+            let tableRows = "";
+            if (cmd.details && cmd.details.length > 0) {
+                cmd.details.forEach(item => {
+                    tableRows += `
+                        <tr>
+                            <td>${item.nom}</td>
+                            <td>${item.prix_unitaire} FCFA</td>
+                            <td>${item.quantite}</td>
+                            <td>${item.sous_total} FCFA</td>
+                        </tr>
+                    `;
+                });
+            } else {
+                // Fallback parsing from text nourriture
+                const items = cmd.nourriture.split(", ");
+                items.forEach(item => {
+                    const parts = item.split("x ");
+                    const qty = parts[0] || "1";
+                    const name = parts[1] || item;
+                    tableRows += `
+                        <tr>
+                            <td>${name}</td>
+                            <td>-</td>
+                            <td>${qty}</td>
+                            <td>-</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            container.innerHTML = `
+                <div class="invoice-card">
+                    <div class="invoice-header">
+                        <div class="invoice-title">
+                            <h2>REÇU DE COMMANDE</h2>
+                            <p style="color: #718096; font-size: 14px; margin-top: 5px;">ID: ${cmd.id}</p>
+                        </div>
+                        <div class="invoice-logo" style="text-align: right;">
+                            <img src="../assets/logo.png" width="50" alt="Logo">
+                            <h4 style="font-weight: 700; color: #091a29; margin-top: 5px;">SAMINA</h4>
+                        </div>
+                    </div>
+
+                    <div class="invoice-details">
+                        <div>
+                            <h3>Client</h3>
+                            <p>${cmd.nom}</p>
+                        </div>
+                        <div>
+                            <h3>Date & Heure</h3>
+                            <p>${cmd.date} à ${cmd.heure}</p>
+                        </div>
+                    </div>
+
+                    <table class="invoice-table">
+                        <thead>
+                            <tr>
+                                <th>Produit</th>
+                                <th>Prix unitaire</th>
+                                <th>Quantité</th>
+                                <th>Sous-total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
+
+                    <div class="invoice-summary">
+                        <div class="summary-box">
+                            <div class="summary-row">
+                                <span>Total Facturé</span>
+                                <strong>${cmd.prixInitial} FCFA</strong>
+                            </div>
+                            <div class="summary-row">
+                                <span>Montant Payé</span>
+                                <strong style="color: #28a745;">${cmd.prixTotal} FCFA</strong>
+                            </div>
+                            <div class="summary-row">
+                                <span>Reste à Payer</span>
+                                <strong style="color: ${cmd.reste > 0 ? '#dc3545' : '#28a745'}">${cmd.reste} FCFA</strong>
+                            </div>
+                            ${cmd.message ? `
+                            <div class="summary-row" style="border-bottom: none; padding-top: 15px;">
+                                <span style="font-style: italic; color: #718096;">Instructions: "${cmd.message}"</span>
+                            </div>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    <div class="invoice-actions">
+                        <button onclick="window.print()">🖨 Imprimer la facture</button>
+                        <button class="close-btn" onclick="window.location.href='commandes.html'">Retour</button>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+
+</html>

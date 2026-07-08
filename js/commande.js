@@ -1,38 +1,8 @@
-const defaultCommandes = [
-    {
-        id: "CMD-1",
-        nom: "Koffi Jean",
-        nourriture: "Poulet entier, Coca-Cola",
-        quantite: 1,
-        prixInitial: 4200,
-        prixTotal: 4000,
-        reste: 200,
-        message: "Bien cuit",
-        date: "30/06/2026",
-        heure: "12:15:30"
-    },
-    {
-        id: "CMD-2",
-        nom: "Diallo Mariam",
-        nourriture: "Sandwich, Fanta",
-        quantite: 2,
-        prixInitial: 2400,
-        prixTotal: 2400,
-        reste: 0,
-        message: "Sans oignon",
-        date: "30/06/2026",
-        heure: "10:45:10"
-    }
-];
-
-let commandes = JSON.parse(localStorage.getItem("commandes"));
-if (!commandes || commandes.length === 0) {
-    commandes = defaultCommandes;
-    localStorage.setItem("commandes", JSON.stringify(commandes));
-}
+const API_URL = "http://localhost:3001/api";
+let commandes = [];
 
 document.addEventListener("DOMContentLoaded", () => {
-    afficherCommandes();
+    chargerCommandes();
 
     const searchInput = document.getElementById("searchInput");
     if (searchInput) {
@@ -43,22 +13,29 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+async function chargerCommandes() {
+    try {
+        const response = await fetch(`${API_URL}/commandes`);
+        if (!response.ok) throw new Error("Erreur de chargement des commandes");
+        commandes = await response.json();
+        afficherCommandes();
+    } catch (error) {
+        console.error(error);
+        alert("Impossible de charger l'historique des commandes.");
+    }
+}
+
 function afficherCommandes(filter = "") {
     const tableBody = document.getElementById("historiqueCommandeTable");
     if (!tableBody) return;
     tableBody.innerHTML = "";
 
-    commandes.forEach((cmd, index) => {
+    commandes.forEach((cmd) => {
         const clientName = cmd.nom || "Client";
         const products = cmd.nourriture || "Produit";
         
         if (filter && !clientName.toLowerCase().includes(filter) && !products.toLowerCase().includes(filter)) {
             return;
-        }
-
-        // Si la commande n'a pas d'identifiant unique, on lui en attribue un
-        if (!cmd.id) {
-            cmd.id = "CMD-" + (Date.now() + index);
         }
 
         const tr = document.createElement("tr");
@@ -73,20 +50,24 @@ function afficherCommandes(filter = "") {
             <td>${cmd.date || ""} ${cmd.heure || ""}</td>
             <td>
                 <button onclick="voirFacture('${cmd.id}')">🧾 Facture</button>
-                <button class="close-btn" onclick="supprimerCommande(${index})">Supprimer</button>
+                <button class="close-btn" onclick="supprimerCommande('${cmd.id}')">Supprimer</button>
             </td>
         `;
         tableBody.appendChild(tr);
     });
-    // Mettre à jour l'ID local
-    localStorage.setItem("commandes", JSON.stringify(commandes));
 }
 
-function supprimerCommande(index) {
+async function supprimerCommande(id) {
     if (confirm("Voulez-vous vraiment supprimer cette commande ?")) {
-        commandes.splice(index, 1);
-        localStorage.setItem("commandes", JSON.stringify(commandes));
-        afficherCommandes();
+        try {
+            const response = await fetch(`${API_URL}/commandes/${id}`, {
+                method: "DELETE"
+            });
+            if (!response.ok) throw new Error("Erreur lors de la suppression de la commande.");
+            await chargerCommandes();
+        } catch (error) {
+            alert(error.message);
+        }
     }
 }
 

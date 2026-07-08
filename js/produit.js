@@ -1,26 +1,8 @@
-const defaultProduits = [
-    { nom: "Pain grand", prix: 150 },
-    { nom: "Pain petit", prix: 100 },
-    { nom: "Poulet entier", prix: 4000 },
-    { nom: "Frites", prix: 200 },
-    { nom: "Brochette", prix: 200 },
-    { nom: "Sandwich", prix: 1000 },
-    { nom: "Coca-Cola", prix: 200 },
-    { nom: "Fanta", prix: 200 },
-    { nom: "Sprite", prix: 200 },
-    { nom: "Eau Minérale", prix: 500 },
-    { nom: "Jus pressé", prix: 1000 },
-    { nom: "Energy Drink", prix: 500 }
-];
-
-let produits = JSON.parse(localStorage.getItem("produits"));
-if (!produits || produits.length === 0) {
-    produits = defaultProduits;
-    localStorage.setItem("produits", JSON.stringify(produits));
-}
+const API_URL = "http://localhost:3001/api";
+let produits = [];
 
 document.addEventListener("DOMContentLoaded", () => {
-    afficherProduits();
+    chargerProduits();
 
     const searchInput = document.getElementById("searchInput");
     if (searchInput) {
@@ -39,13 +21,26 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-function openPopup(id, editIdx = -1) {
+async function chargerProduits() {
+    try {
+        const response = await fetch(`${API_URL}/produits`);
+        if (!response.ok) throw new Error("Erreur de chargement des produits");
+        produits = await response.json();
+        afficherProduits();
+    } catch (error) {
+        console.error(error);
+        alert("Impossible de charger les produits.");
+    }
+}
+
+function openPopup(id, editId = -1) {
     document.getElementById(id).style.display = "flex";
-    if (editIdx > -1) {
+    if (editId > -1) {
+        const prod = produits.find(p => p.id === editId);
         document.getElementById("popupTitle").textContent = "Modifier le produit";
-        document.getElementById("editIndex").value = editIdx;
-        document.getElementById("nom").value = produits[editIdx].nom;
-        document.getElementById("prix").value = produits[editIdx].prix;
+        document.getElementById("editIndex").value = editId;
+        document.getElementById("nom").value = prod ? prod.nom : "";
+        document.getElementById("prix").value = prod ? prod.prix : "";
     } else {
         document.getElementById("popupTitle").textContent = "Ajouter un produit";
         document.getElementById("editIndex").value = "-1";
@@ -63,7 +58,7 @@ function afficherProduits(filter = "") {
     if (!tableBody) return;
     tableBody.innerHTML = "";
 
-    produits.forEach((produit, index) => {
+    produits.forEach((produit) => {
         if (filter && !produit.nom.toLowerCase().includes(filter)) {
             return;
         }
@@ -73,39 +68,62 @@ function afficherProduits(filter = "") {
             <td>${produit.nom}</td>
             <td>${produit.prix} FCFA</td>
             <td>
-                <button onclick="openPopup('popupProduit', ${index})">Modifier</button>
-                <button class="close-btn" onclick="supprimerProduit(${index})">Supprimer</button>
+                <button onclick="openPopup('popupProduit', ${produit.id})">Modifier</button>
+                <button class="close-btn" onclick="supprimerProduit(${produit.id})">Supprimer</button>
             </td>
         `;
         tableBody.appendChild(tr);
     });
 }
 
-function sauvegarderProduit() {
+async function sauvegarderProduit() {
     const nom = document.getElementById("nom").value.trim();
     const prix = parseFloat(document.getElementById("prix").value);
-    const editIndex = parseInt(document.getElementById("editIndex").value);
+    const editId = parseInt(document.getElementById("editIndex").value);
 
     if (!nom || isNaN(prix)) {
         alert("Veuillez remplir tous les champs correctement.");
         return;
     }
 
-    if (editIndex === -1) {
-        produits.push({ nom, prix });
-    } else {
-        produits[editIndex] = { nom, prix };
-    }
+    try {
+        let response;
+        if (editId === -1) {
+            response = await fetch(`${API_URL}/produits`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nom, prix })
+            });
+        } else {
+            response = await fetch(`${API_URL}/produits/${editId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nom, prix })
+            });
+        }
 
-    localStorage.setItem("produits", JSON.stringify(produits));
-    closePopup("popupProduit");
-    afficherProduits();
+        if (!response.ok) throw new Error("Erreur lors de l'enregistrement");
+
+        closePopup("popupProduit");
+        await chargerProduits();
+    } catch (error) {
+        alert(error.message);
+    }
 }
 
-function supprimerProduit(index) {
-    if (confirm(`Voulez-vous vraiment supprimer le produit "${produits[index].nom}" ?`)) {
-        produits.splice(index, 1);
-        localStorage.setItem("produits", JSON.stringify(produits));
-        afficherProduits();
+async function supprimerProduit(id) {
+    const prod = produits.find(p => p.id === id);
+    if (!prod) return;
+
+    if (confirm(`Voulez-vous vraiment supprimer le produit "${prod.nom}" ?`)) {
+        try {
+            const response = await fetch(`${API_URL}/produits/${id}`, {
+                method: "DELETE"
+            });
+            if (!response.ok) throw new Error("Erreur lors de la suppression");
+            await chargerProduits();
+        } catch (error) {
+            alert(error.message);
+        }
     }
 }
