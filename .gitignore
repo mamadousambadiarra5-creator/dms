@@ -1,1 +1,9 @@
 .vercel
+node_modules/
+.env
+.env.local
+.env.*.local
+npm-debug.log*
+.DS_Store
+.vscode/
+.prisma-client/

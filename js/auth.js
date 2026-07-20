@@ -1,4 +1,17 @@
-const API_URL = "http://localhost:3001/api";
+const API_URL = (() => {
+    const params = new URLSearchParams(window.location.search);
+    const queryApi = params.get("api");
+    if (queryApi) return queryApi.replace(/\/$/, "");
+
+    const storedApi = localStorage.getItem("API_URL");
+    if (storedApi) return storedApi.replace(/\/$/, "");
+
+    if (window.location.protocol === "file:") {
+        return "http://localhost:3001/api";
+    }
+
+    return `${window.location.origin}/api`;
+})();
 
 document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById("loginForm");
@@ -22,7 +35,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     body: JSON.stringify({ email, password })
                 });
 
-                const data = await response.json();
+                const text = await response.text();
+                let data = {};
+                try {
+                    data = text ? JSON.parse(text) : {};
+                } catch {
+                    data = { error: text || "Réponse inattendue du serveur." };
+                }
+
                 if (!response.ok) {
                     throw new Error(data.error || "Une erreur est survenue lors de la connexion.");
                 }
@@ -55,7 +75,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     body: JSON.stringify({ name, email, phone, password })
                 });
 
-                const data = await response.json();
+                const text = await response.text();
+                let data = {};
+                try {
+                    data = text ? JSON.parse(text) : {};
+                } catch {
+                    data = { error: text || "Réponse inattendue du serveur." };
+                }
+
                 if (!response.ok) {
                     throw new Error(data.error || "Une erreur est survenue lors de l'inscription.");
                 }

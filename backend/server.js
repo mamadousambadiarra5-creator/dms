@@ -5,12 +5,27 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const app = express();
 
+const isVercelRuntime = process.env.VERCEL === "1" || process.env.NOW_REGION;
+
 app.use(cors());
 app.use(express.json());
+
+app.get("/health", (req, res) => {
+  res.json({ status: "ok" });
+});
+
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok" });
+});
 
 // Bootstrapping: Création d'un administrateur par défaut si la base est vide
 async function bootstrap() {
   try {
+    if (!process.env.DATABASE_URL) {
+      console.warn("DATABASE_URL n'est pas définie. Le bootstrap est ignoré.");
+      return;
+    }
+
     const userCount = await prisma.utilisateur.count();
     if (userCount === 0) {
       await prisma.utilisateur.create({
@@ -84,7 +99,15 @@ async function bootstrap() {
 
 app.post("/api/auth/register", async (req, res) => {
   try {
+    if (!process.env.DATABASE_URL) {
+      return res.status(500).json({ error: "La base de données n'est pas configurée sur Vercel. Ajoutez DATABASE_URL." });
+    }
+
     const { name, email, phone, password } = req.body;
+
+    if (!name || !email || !phone || !password) {
+      return res.status(400).json({ error: "Veuillez remplir tous les champs." });
+    }
 
     const existingUser = await prisma.utilisateur.findFirst({
       where: { email_usr: email },
@@ -119,12 +142,20 @@ app.post("/api/auth/register", async (req, res) => {
       role: user.role_usr,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Erreur register:", error);
+    res.status(500).json({
+      error: error.message || "Erreur serveur lors de l'inscription.",
+      detail: process.env.NODE_ENV === "development" ? String(error) : undefined,
+    });
   }
 });
 
 app.post("/api/auth/login", async (req, res) => {
   try {
+    if (!process.env.DATABASE_URL) {
+      return res.status(500).json({ error: "La base de données n'est pas configurée sur Vercel. Ajoutez DATABASE_URL." });
+    }
+
     const { email, password } = req.body;
 
     const user = await prisma.utilisateur.findFirst({
@@ -146,7 +177,11 @@ app.post("/api/auth/login", async (req, res) => {
       role: user.role_usr,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Erreur login:", error);
+    res.status(500).json({
+      error: error.message || "Erreur serveur lors de la connexion.",
+      detail: process.env.NODE_ENV === "development" ? String(error) : undefined,
+    });
   }
 });
 
@@ -580,7 +615,12 @@ app.get("/api/dashboard/stats", async (req, res) => {
 
 // Lancement du serveur et initialisation
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, async () => {
-  console.log(`Backend démarré sur http://localhost:${PORT}`);
-  await bootstrap();
-});
+
+if (require.main === module) {
+  app.listen(PORT, "0.0.0.0", async () => {
+    console.log(`Backend démarré sur http://0.0.0.0:${PORT}`);
+    await bootstrap();
+  });
+}
+
+module.exports = app;

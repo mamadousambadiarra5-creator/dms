@@ -1,4 +1,17 @@
-const API_URL = "http://localhost:3001/api";
+const API_URL = (() => {
+    const params = new URLSearchParams(window.location.search);
+    const queryApi = params.get("api");
+    if (queryApi) return queryApi.replace(/\/$/, "");
+
+    const storedApi = localStorage.getItem("API_URL");
+    if (storedApi) return storedApi.replace(/\/$/, "");
+
+    if (window.location.protocol === "file:") {
+        return "http://localhost:3001/api";
+    }
+
+    return `${window.location.origin}/api`;
+})();
 
 document.addEventListener("DOMContentLoaded", () => {
     chargerUtilisateur();
