@@ -27,52 +27,54 @@ async function bootstrap() {
       console.log("Utilisateur admin par défaut créé (admin@samina.com / admin).");
     }
 
+
     // Créer des produits par défaut s'il n'y en a pas
-    const productCount = await prisma.produit.count();
-    if (productCount === 0) {
-      const defaultUser = await prisma.utilisateur.findFirst();
-      const defaultProduits = [
-        { nom_prd: "Pain grand", prix_prd: 150, categorie_prd: "PLATS" },
-        { nom_prd: "Pain petit", prix_prd: 100, categorie_prd: "PLATS" },
-        { nom_prd: "Poulet entier", prix_prd: 4000, categorie_prd: "PLATS" },
-        { nom_prd: "Frites", prix_prd: 200, categorie_prd: "PLATS" },
-        { nom_prd: "Brochette", prix_prd: 200, categorie_prd: "PLATS" },
-        { nom_prd: "Sandwich", prix_prd: 1000, categorie_prd: "PLATS" },
-        { nom_prd: "Coca-Cola", prix_prd: 200, categorie_prd: "BOISSON" },
-        { nom_prd: "Fanta", prix_prd: 200, categorie_prd: "BOISSON" },
-        { nom_prd: "Sprite", prix_prd: 200, categorie_prd: "BOISSON" },
-        { nom_prd: "Eau Minérale", prix_prd: 500, categorie_prd: "BOISSON" },
-      ];
+    // const productCount = await prisma.produit.count();
+    // if (productCount === 0) {
+    //   const defaultUser = await prisma.utilisateur.findFirst();
+    //   const defaultProduits = [
+    //     { nom_prd: "Pain grand", prix_prd: 150, categorie_prd: "PLATS" },
+    //     { nom_prd: "Pain petit", prix_prd: 100, categorie_prd: "PLATS" },
+    //     { nom_prd: "Poulet entier", prix_prd: 4000, categorie_prd: "PLATS" },
+    //     { nom_prd: "Frites", prix_prd: 200, categorie_prd: "PLATS" },
+    //     { nom_prd: "Brochette", prix_prd: 200, categorie_prd: "PLATS" },
+    //     { nom_prd: "Sandwich", prix_prd: 1000, categorie_prd: "PLATS" },
+    //     { nom_prd: "Coca-Cola", prix_prd: 200, categorie_prd: "BOISSON" },
+    //     { nom_prd: "Fanta", prix_prd: 200, categorie_prd: "BOISSON" },
+    //     { nom_prd: "Sprite", prix_prd: 200, categorie_prd: "BOISSON" },
+    //     { nom_prd: "Eau Minérale", prix_prd: 500, categorie_prd: "BOISSON" },
+    //   ];
 
-      for (const prod of defaultProduits) {
-        await prisma.produit.create({
-          data: {
-            nom_prd: prod.nom_prd,
-            prix_prd: prod.prix_prd,
-            categorie_prd: prod.categorie_prd,
-            id_usr: defaultUser.id_usr,
-          },
-        });
-      }
-      console.log("Produits par défaut créés.");
-    }
+    //   for (const prod of defaultProduits) {
+    //     await prisma.produit.create({
+    //       data: {
+    //         nom_prd: prod.nom_prd,
+    //         prix_prd: prod.prix_prd,
+    //         categorie_prd: prod.categorie_prd,
+    //         id_usr: defaultUser.id_usr,
+    //       },
+    //     });
+    //   }
+    //   console.log("Produits par défaut créés.");
+    
 
-    // Créer des membres par défaut s'il n'y en a pas
-    const memberCount = await prisma.membre.count();
-    if (memberCount === 0) {
-      const defaultMembres = [
-        { nom_mbr: "Koffi", prenom_mbr: "Jean" },
-        { nom_mbr: "Diallo", prenom_mbr: "Mariam" },
-        { nom_mbr: "Sow", prenom_mbr: "Amadou" },
-      ];
 
-      for (const mbr of defaultMembres) {
-        await prisma.membre.create({
-          data: mbr,
-        });
-      }
-      console.log("Membres par défaut créés.");
-    }
+//     // Créer des membres par défaut s'il n'y en a pas
+//     const memberCount = await prisma.membre.count();
+//     if (memberCount === 0) {
+//       const defaultMembres = [
+//         { nom_mbr: "Koffi", prenom_mbr: "Jean" },
+//         { nom_mbr: "Diallo", prenom_mbr: "Mariam" },
+//         { nom_mbr: "Sow", prenom_mbr: "Amadou" },
+//       ];
+
+//       for (const mbr of defaultMembres) {
+//         await prisma.membre.create({
+//           data: mbr,
+//         });
+//       }
+//       console.log("Membres par défaut créés.");
+//     }
   } catch (error) {
     console.error("Erreur lors du bootstrapping de la base de données :", error);
   }
